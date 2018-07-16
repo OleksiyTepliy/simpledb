@@ -32,6 +32,7 @@ enum err {
 	E_FOPEN,	// File open
 	E_FREAD,	// File read
 	E_FWRITE,	// File write
+	E_EXIST, 	// try to rewrite existent file
 	E_WRONGCRC,		// CRC mismatch
 	E_last_	// stores index of the last element
 };
