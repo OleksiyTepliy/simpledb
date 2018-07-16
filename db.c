@@ -65,6 +65,12 @@ static char *query_name[] = {
  [Q_HELP] = "help"
 };
 
+enum birth_limits {
+	MAX_DATE = 31,
+	MAX_MONTH = 12,
+	MAX_YEAR = 4095
+};
+
 static struct dbitem make_item(const char *str)
 {
 	struct dbitem ret = {0};
@@ -86,12 +92,32 @@ static struct dbitem make_item(const char *str)
 		first_name = "(none)";
 	if ((email == NULL) || (strlen(email) < 3))
 		email = "(wrong)";
-	unsigned int dd, mm, yyyy;
-	if ((date != NULL) && sscanf(date, "%u.%u.%u", &dd, &mm, &yyyy) == 3) {
+	int dd, mm, yyyy;
+	if ((date != NULL) && sscanf(date, "%d.%d.%d", &dd, &mm, &yyyy) == 3) {
 		/* ret.birth_date is a bitfield, &operator unusable */
-		ret.birth_date.day = dd;
-		ret.birth_date.month = mm;
-		ret.birth_date.year = yyyy;
+		if (dd <= 0 || dd > MAX_DATE) {
+			printf("Wrong date\n");
+			ret.birth_date.day = 0;
+		}
+		else {
+			ret.birth_date.day = dd;
+		}
+
+		if (mm <= 0 || mm > MAX_MONTH) {
+			printf("Wrong month\n");
+			ret.birth_date.month = 0;
+		}
+		else {
+			ret.birth_date.month = mm;
+		}
+
+		if (yyyy < 0 || yyyy > MAX_YEAR) {
+			printf("Wrong year\n");
+			ret.birth_date.year = 0;
+		}
+		else {
+			ret.birth_date.year = yyyy;
+		}
 	}
 
 	strcpy(ret.last_name, last_name);
