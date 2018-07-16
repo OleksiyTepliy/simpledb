@@ -298,8 +298,6 @@ int main(int argc, char *argv[]) {
 			char *fname = m_strjoin("/", args.dir, qval);
 			struct dbitem itm;
 			if ((lerr = item_read(fname, &itm)) != E_OK) {
-				item_remove_bykey(qval, args.dir);
-				printf("DB entry \"%s\" doesn't exist\n", qval);
 				free(fname);
 				err_exit(args.isquiet, lerr);
 			}
