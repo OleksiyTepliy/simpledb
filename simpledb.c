@@ -44,7 +44,13 @@ static inline enum err _item_do(enum err (*func)(FILE *, struct dbitem *),
 		                const char *pathname, struct dbitem *item)
 {
 	enum err retcode = E_OK;
-	FILE *fp = xopen(pathname, "r+");
+	FILE *fp = NULL;
+	if (func == &item_read_f) {
+		fp = xopen(pathname, "r");
+	}
+	else if (func == &item_write_f) {
+		fp = xopen(pathname, "a+");
+	}
 	if (fp == NULL)
 		return E_FOPEN;
 	retcode = (*func)(fp, item);
@@ -134,7 +140,13 @@ enum err listdir(const char *dirname, struct strvec *vector)
 
 FILE *xopen(const char *pathname, const char *mode)
 {
-	int fd = open(pathname, O_RDWR | O_CREAT, 0666);  /* "a+" + creation */
+	int fd = -1;
+	if (strcmp(mode, "r") == 0) {
+		fd = open(pathname, O_RDONLY, 0666);  /* read only */
+	}
+	else if (strcmp(mode, "a+") == 0){
+		fd = open(pathname, O_RDWR | O_CREAT, 0666);  /* "a+" + creation */
+	}
 	if (fd < 0)
 		return NULL;
 	return fdopen(fd, mode);
