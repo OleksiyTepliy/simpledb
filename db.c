@@ -24,6 +24,7 @@ static char *errmsg[] = {
  [E_FOPEN] = "LibErr: File open\n",
  [E_FREAD] = "LibErr: File read\n",
  [E_FWRITE]= "LibErr: File write\n",
+ [E_EXIST]   = "LibErr: File already exist. Could not create new file.\n",
  [E_WRONGCRC]   = "LibErr: CRC mismatch. File corrupted\n",
  [EM_WRONGDIR] = "Error: Wrong directory specified\n",
  [EM_DIRCREATE] = "Error: Could not create directory\n",
@@ -314,6 +315,11 @@ int main(int argc, char *argv[]) {
 		case Q_ADD:;
 			struct dbitem item = make_item(qval);
 			char *fn = m_strjoin("/", args.dir, item.key);
+			if (item_read(fn, &itm) == E_OK) {
+				printf("DB entry \"%s\" already exist\n", qval);
+				free(fn);							
+				err_exit(args.isquiet, E_EXIST);
+			}
 			if ((lerr = item_write(fn, &item)) != E_OK) {
 				free(fn);
 				err_exit(args.isquiet, lerr);
